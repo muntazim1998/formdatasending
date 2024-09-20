@@ -1,101 +1,177 @@
-import Image from "next/image";
+'use client'
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@headlessui/react";
+import { useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+
+function classNames(...classes) {
+  return classes.filter(Boolean).join(' ');
+}
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [agreed, setAgreed] = useState(false);
+  const [formData, setFormData] = useState({
+    firstname: '',
+    lastname: '',
+    phone: '',
+    email: '',
+    message: '',
+  });
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [id]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const response = await fetch('/api/sendemail', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    });
+
+    if (response.ok) {
+      toast.success('Query received successfully. We will get back to you soon. Thanks!', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      setFormData({
+        firstname: '',
+        lastname: '',
+        phone: '',
+        email: '',
+        message: '',
+      });
+      setAgreed(false);
+    } else {
+      toast.error('Failed to send query. Please try again later.', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    }
+  };
+
+  return (
+    <div className="px-6 py-24 sm:py-32 lg:px-8 bg-gray-50 dark:bg-gray-900">
+      <ToastContainer />
+      <div className="mx-auto max-w-2xl text-center">
+        <p className="text-lg leading-8 text-gray-700 dark:text-gray-300">
+          This page is exclusively for fit-out enquiry service purposes:
+        </p>
+        <h2 className="text-2xl mt-4 font-semibold tracking-tight sm:text-4xl text-gray-900 dark:text-white">
+          Please feel free to ask anything
+        </h2>
+      </div>
+
+      <form
+        className="mx-auto mt-16 max-w-xl sm:mt-20 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8"
+        onSubmit={handleSubmit}
+      >
+        <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
+          <div className="mt-2.5">
+            <Input
+              type="text"
+              id="firstname"
+              placeholder="First Name"
+              value={formData.firstname}
+              onChange={handleChange}
+              className="rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-200"
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          </div>
+          <div className="mt-2.5">
+            <Input
+              type="text"
+              id="lastname"
+              placeholder="Last Name"
+              value={formData.lastname}
+              onChange={handleChange}
+              className="rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-200"
+            />
+          </div>
+          <div className="sm:col-span-2">
+            <Input
+              type="text"
+              id="phone"
+              placeholder="Phone Number"
+              value={formData.phone}
+              onChange={handleChange}
+              className="rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-200"
+            />
+          </div>
+          <div className="sm:col-span-2">
+            <Input
+              type="email"
+              id="email"
+              placeholder="Email Address"
+              value={formData.email}
+              onChange={handleChange}
+              className="rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-200"
+            />
+          </div>
+          <div className="sm:col-span-2">
+            <Textarea
+              id="message"
+              placeholder="Type Your Query Here..."
+              value={formData.message}
+              onChange={handleChange}
+              className="rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-200"
+            />
+          </div>
+          <Switch.Group as="div">
+            <div>
+              <Switch
+                checked={agreed}
+                onChange={setAgreed}
+                className={classNames(
+                  agreed ? 'bg-blue-500' : 'bg-gray-200',
+                  'flex w-8 flex-none cursor-pointer rounded-full p-px ring-1 ring-inset ring-gray-900/5 transition-colors duration-200 ease-in-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2'
+                )}
+              >
+                <span className="sr-only">Agree to our policies</span>
+                <span
+                  aria-hidden="true"
+                  className={classNames(
+                    agreed ? 'translate-x-3.5' : 'translate-x-0',
+                    'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white ring-1 ring-gray-900/5 transition duration-200 ease-in-out'
+                  )}
+                />
+              </Switch>
+            </div>
+            <Switch.Label as="span" className="ml-3 text-sm">
+              <span className="font-medium text-gray-900 dark:text-white">
+                I agree to our privacy policy.
+              </span>
+            </Switch.Label>
+          </Switch.Group>
+          <div className="sm:col-span-2">
+            <Button
+              type="submit"
+              disabled={!agreed}
+              className="w-full py-3 text-lg font-semibold text-white bg-blue-500 hover:bg-blue-600 transition-colors duration-300 ease-in-out"
+            >
+              Send Message
+            </Button>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </form>
     </div>
   );
 }
