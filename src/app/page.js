@@ -74,7 +74,7 @@ export default function Home() {
       <ToastContainer />
       <div className="mx-auto max-w-2xl text-center">
         <p className="text-lg leading-8 text-gray-700 dark:text-gray-300">
-          This page is exclusively for fit-out enquiry service purposes:
+          This page is exclusively for Enquiry service purposes:
         </p>
         <h2 className="text-2xl mt-4 font-semibold tracking-tight sm:text-4xl text-gray-900 dark:text-white">
           Please feel free to ask anything
